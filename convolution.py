@@ -28,7 +28,7 @@ def getWindows(input, output_size, kernel_size, padding=0, stride=1, dilate=0):
     )
 
 class Convolution(Layer):
-    def __init__(self, input_channel = 3, kernel_size = 3, no_of_filters = 5, stride = 1, padding = 0):
+    def __init__(self, input_channel = 3, kernel_size = 3, no_of_filters = 5, stride = 1, padding = 0, f = None):
         self.input_channel = input_channel
         self.kernel_size = kernel_size
         self.no_of_filters = no_of_filters
@@ -36,8 +36,12 @@ class Convolution(Layer):
         self.padding = padding
         self.W = None
         self.b = None
+        self.dw = None
+        self.db = None
         self.cache = None
         self.init_weights()
+
+        self.f = f
 
 
 
@@ -62,6 +66,8 @@ class Convolution(Layer):
 
         self.cache = a, windows
 
+        self.print_params(self.f)
+
         return out
 
 
@@ -81,6 +87,8 @@ class Convolution(Layer):
         da = np.einsum('bohwkl,oikl->bihw', dz_windows, rotted_kernel)
 
 
+        self.print_params(self.f)
+
         return da
 
 
@@ -96,8 +104,10 @@ class Convolution(Layer):
     def print_params(self,f):
         f.write("W: " + str(self.W) + "\n\n")
         f.write("b: " + str(self.b) + "\n\n")
-        f.write("dw: " + str(self.dw) + "\n\n")
-        f.write("db: " + str(self.db) + "\n\n")
+
+        if self.dw is not None:
+            f.write("dw: " + str(self.dw) + "\n\n")
+            f.write("db: " + str(self.db) + "\n\n")
 
 
 

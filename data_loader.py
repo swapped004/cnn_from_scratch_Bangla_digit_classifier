@@ -42,7 +42,7 @@ class DataLoader:
 
         return X_test
 
-    def load_data(self, path):
+    def load_data(self, path, test_size = 0.2):
         #read data from csv file
         data = pd.read_csv(path)
 
@@ -83,8 +83,8 @@ class DataLoader:
                 img = img.reshape((img.shape[0], img.shape[1], 1))            
 
             X_train.append(img)
-            y = np.zeros((1,10))
-            y[0][label] = 1
+            y = np.zeros(10,)
+            y[label] = 1
             y_train.append(y)
 
         X_train = np.array(X_train)
@@ -102,8 +102,24 @@ class DataLoader:
         print(X_train.shape)
         print(y_train.shape)
 
+        X_train, y_train, X_val, y_val = self.split_data(X_train, y_train, test_size = test_size)
 
-        return X_train, y_train
+        return X_train, y_train, X_val, y_val
+
+
+    def split_data(self, X, y, test_size = 0.1):
+        #split the data into training and validation sets
+        m = X.shape[0]
+        num_test = math.floor(m*test_size)
+
+        X_train = X[num_test:, :]
+        y_train = y[num_test:, :]
+
+        X_val = X[:num_test, :]
+        y_val = y[:num_test, :]
+
+        return X_train, y_train, X_val, y_val
+
 
     def mini_batches(self, X_train, y_train, batch_size):
 

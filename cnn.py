@@ -29,12 +29,45 @@ class CNN:
 
 
     def init_architecture(self):
-        self.add(Convolution(3, 3, 5, 1, 1))
+        self.conv1 = open("convolution1.txt", "w")
+        self.add(Convolution(3, 3, 5, 1, 1, self.conv1))
+        
+        self.relu1 = open("relu1.txt", "w")
         self.add(ReluActivation())
-        self.add(MaxPooling(2, 2))
+        
+        self.maxpool1 = open("maxpool1.txt", "w")
+        self.add(MaxPooling(2, 2, self.maxpool1))
+       
+        
+        # self.conv2 = open("convolution2.txt", "w")
+        # self.add(Convolution(5, 3, 5, 1, 1, self.conv2))
+        
+        # self.relu2 = open("relu2.txt", "w")
+        # self.add(ReluActivation())
+
+        # self.maxpool2 = open("maxpool2.txt", "w")
+        # self.add(MaxPooling(2, 2, self.maxpool2))
+        
+        self.flatten = open("flatten.txt", "w")
         self.add(Flattening())
-        self.add(FullyConnected(10))
-        self.add(Softmax())
+
+        self.fc1 = open("fullyconnected1.txt", "w")
+        self.add(FullyConnected(10, self.fc1))
+
+        self.bn1 = open("batchnorm1.txt", "w")
+        self.add(BatchNormalization())
+
+        # self.add(ReluActivation())
+        
+
+        # self.fc2 = open("fullyconnected2.txt", "w")
+        # self.add(FullyConnected(10, self.fc2))
+
+        # self.bn2 = open("batchnorm2.txt", "w")
+        # self.add(BatchNormalization())
+
+        self.softmax = open("softmax.txt", "w")
+        self.add(Softmax(self.softmax))
 
 
 
@@ -65,26 +98,56 @@ class CNN:
         return np.argmax(z, axis=1)
 
 
+    def test_accuracy(self, x, y):
+        z = self.forward(x, train=False)
+
+        print("z shape: ", z.shape)
+        print("z: ", z)
+
+        y_pred = np.argmax(z, axis=1)
+        y_true = np.argmax(y, axis=1)
+
+        #print predictions and true labels
+        print("Predictions: ", y_pred)
+        print("True labels: ", y_true)
+
+        accuray = np.sum(y_pred == y_true) / len(y_true) * 100
+        print("Accuracy: ", accuray, "%")
+
 
 #test code
 if __name__ == "__main__":
+    #change seed for different results
+    np.random.seed(0)
+
+
     cnn = CNN(learning_rate=0.001)
     cnn.init_architecture()
 
     #load data
     data_loader = DataLoader(grayscale=False)
-    X_train, y_train = data_loader.load_data("datasets/training-b.csv")
+    X_train, y_train, X_test, y_test = data_loader.load_data("datasets/training-a.csv", test_size = 0.5)
 
-    mini_batches = data_loader.mini_batches(X_train, y_train, batch_size=32)
+    mini_batches = data_loader.mini_batches(X_train, y_train, batch_size=64)
+
+    print("X_train shape: ", X_train.shape)
+    print("y_train shape: ", y_train.shape)
+    print("X_test shape: ", X_test.shape)
+    print("y_test shape: ", y_test.shape)
+
 
     cnn.train(mini_batches, epochs=100)
 
+    # X_test, y_test = data_loader.load_data("datasets/training-b.csv")
 
-    X_test = data_loader.load_test_data("datasets/testing-b")
+    cnn.test_accuracy(X_test, y_test)
 
-    labels = cnn.test_labels(X_test)
 
-    print(labels)
+    # X_test = data_loader.load_test_data("datasets/testing-b")
+
+    # labels = cnn.test_labels(X_test)
+
+    # print(labels)
 
 
 

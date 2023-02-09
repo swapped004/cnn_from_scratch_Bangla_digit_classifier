@@ -10,6 +10,7 @@ class BatchNormalization(Layer):
         self.d_beta = None
 
 
+
     def init_params(self, input_shape):
         self.gamma = np.ones(input_shape)
         self.beta = np.zeros(input_shape)
@@ -27,6 +28,10 @@ class BatchNormalization(Layer):
             self.gamma = np.ones(z.shape)
             self.beta = np.zeros(z.shape)
 
+        if self.gamma.shape != z.shape:
+            self.gamma = np.ones(z.shape)
+            self.beta = np.zeros(z.shape)
+            
         z = self.gamma * z + self.beta
         self.cache = z
 

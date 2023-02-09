@@ -3,7 +3,7 @@ import numpy as np
 
 
 class FullyConnected(Layer):
-    def __init__(self, output_size):
+    def __init__(self, output_size, f = None):
         self.output_size = output_size
         self.W = None
         self.b = None
@@ -11,8 +11,10 @@ class FullyConnected(Layer):
         self.dW = None
         self.db = None
 
+        self.f = f
+
     def init_weights(self, input_size):
-        self.W = np.random.randn(input_size, self.output_size) / np.sqrt(input_size)
+        self.W = np.random.randn(input_size, self.output_size) * np.sqrt(2.0 / input_size)
         self.b = np.zeros(self.output_size)
 
 
@@ -24,6 +26,9 @@ class FullyConnected(Layer):
         z = np.dot(a, self.W) + self.b
 
         assert(z.shape == (a.shape[0], self.output_size))
+
+        self.print_params(self.f)
+
         return z
 
     def backward(self, dz):
@@ -36,6 +41,8 @@ class FullyConnected(Layer):
         assert(da.shape == a.shape)
         assert(self.dW.shape == self.W.shape)
         assert(self.db.shape == self.b.shape)
+
+        self.print_params(self.f)
 
         return da
 

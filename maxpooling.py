@@ -4,10 +4,12 @@ import math
 
 
 class MaxPooling(Layer):
-    def __init__(self, kernel_size = 2, stride = 2):
+    def __init__(self, kernel_size = 2, stride = 2, f = None):
         self.kernel_size = kernel_size
         self.stride = stride
         self.cache = None
+
+        self.f = f
 
 
     def forward(self, a, train = True):
@@ -50,6 +52,11 @@ class MaxPooling(Layer):
         assert(da.shape == a.shape)
 
         return da
+
+
+    def print_params(self, f):
+        pass
+
 
 
 
